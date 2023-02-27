@@ -6,7 +6,7 @@ from user_auth.models import CustomUser
 class BookSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         queryset=CustomUser.objects.none(),
-        slug_field='author_pseudonym'
+        slug_field='username'
     )
 
     class Meta:
@@ -22,18 +22,9 @@ class BookSerializer(serializers.ModelSerializer):
 
     def get_fields(self):
         fields = super().get_fields()
+
         if self.logged_in_user:
             fields['author'].queryset = CustomUser.objects.filter(
                 username=self.logged_in_user)
-        return fields
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if self.context['request'].user.is_superuser:
-            data['author'] = {
-                'id': instance.author.id,
-                'username': instance.author.username
-            }
-        else:
-            data.pop('author')
-        return data
+        return fields

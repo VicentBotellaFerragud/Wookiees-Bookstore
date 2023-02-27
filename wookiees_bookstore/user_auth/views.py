@@ -16,6 +16,12 @@ def redirect_to_login(request):
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('/api')
+        else:
+            return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         user = authenticate_and_log_in_user(self.request, form)
         token, created = Token.objects.get_or_create(user=user)

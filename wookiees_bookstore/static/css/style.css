@@ -45,6 +45,10 @@ body {
     }
 }
 
+.wrapper {
+    padding: 2.25rem;
+}
+
 .white {
     color: #fff;
 }
