@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+body {
+    background: linear-gradient(to right, #434343, #000000);
+}
+
 .standard-form {
     min-width: 25vw;
     background-color: #fff;
@@ -41,8 +45,8 @@
     }
 }
 
-.dynamic-content-container {
-    background-image: linear-gradient(-20deg, #00cdac 0%, #8ddad5 100%);
+.white {
+    color: #fff;
 }
 
 .fs-14 {
