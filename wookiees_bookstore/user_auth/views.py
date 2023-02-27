@@ -5,19 +5,20 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import CustomAuthenticationForm
+from django.views.generic.edit import FormView
+from django.contrib.auth.forms import UserCreationForm
+from .forms import NewUserForm
 
 
-class SignupView(generics.CreateAPIView):
-    serializer_class = CustomUserSerializer
-    permission_classes = [AllowAny]
+def redirect_to_login(request):
+    return redirect('/login')
 
 
 def log_in(request):
@@ -26,20 +27,16 @@ def log_in(request):
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
-    form_class = CustomAuthenticationForm
 
     def form_valid(self, form):
-        print(f"form_valid called with {len(self.args)} arguments")
-        author_pseudonym = form.cleaned_data['author_pseudonym']
         username = form.cleaned_data['username']
-        # email = form.cleaned_data['email']
         password = form.cleaned_data['password']
         user = authenticate(request=self.request,
                             username=username, password=password)
         if user is not None:
             login(self.request, user)
             token, created = Token.objects.get_or_create(user=user)
-            return HttpResponseRedirect(reverse('home') + f'?token={token.key}')
+            return redirect('/api' + f'?token={token.key}')
         else:
             return super().form_invalid(form)
 
@@ -48,7 +45,24 @@ class CustomLoginView(LoginView):
         return super().form_invalid(form)
 
 
-@login_required
-def home(request):
-    token = request.GET.get('token')
-    return render(request, 'home.html', {'token': token})
+class CustomSignupView(FormView):
+    form_class = NewUserForm
+    template_name = 'signup.html'
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('/login')
+
+
+class SignupView(generics.CreateAPIView):
+    template_name = 'signup.html'
+    serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == 201:
+            return redirect('/login')
+
+        return response

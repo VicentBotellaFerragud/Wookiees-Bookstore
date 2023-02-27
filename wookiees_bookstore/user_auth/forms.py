@@ -1,5 +1,11 @@
-from django.contrib.auth.forms import AuthenticationForm
-from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser
 
-class CustomAuthenticationForm(AuthenticationForm):
-    author_pseudonym = forms.CharField(max_length=30, required=True)
+
+class NewUserForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ("username", "password1", "password2",)
+
+    def save(self):
+        super(NewUserForm, self).save()

@@ -1,21 +1,46 @@
-{% extends 'base.html' %} {% block content %}
+{% extends "base.html" %} {% block content %}
 
-<h2>Login</h2>
-<form method="POST" action="{% url 'login' %}">
-  {% csrf_token %}
-  <div class="form-group">
-    <label for="author_pseudonym">Username:</label>
-    <input type="text" name="username" id="username" />
-  </div>
-  <div class="form-group">
-    <label for="author_pseudonym">author_pseudonym:</label>
-    <input type="text" name="author_pseudonym" id="author_pseudonym" />
-  </div>
-  <div class="form-group">
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required />
-  </div>
-  <button type="submit" class="btn btn-primary">Login</button>
-</form>
+<div
+  class="d-flex align-items-center justify-content-center flex-column vh-100"
+>
+  <form
+    class="standard-form p-3 mb-3 {% if invalid_credentials %}invalid-credentials{% endif %}"
+    method="POST"
+  >
+    <h3 class="mb-3">Wookiees Bookstore</h3>
+    {% csrf_token %}
+    <div class="mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="username"
+        placeholder="Author pseudonym"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        placeholder="Password"
+        minlength="10"
+        required
+      />
+    </div>
+    {% if invalid_credentials %}
+    <p class="text-danger fs-14 fw-bold">Wrong username or password.</p>
+    {% endif %}
+    <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
+    <p class="fs-14">
+      Don't have an account yet? <a href="/signup">Create one</a> or
+      <a href="/api/overview">log in as guest*</a>.
+    </p>
+  </form>
+  <p class="fs-11">
+    * As a guest you'll be able to see the list of doctors but you won't be able
+    to make an appointment with any of them.
+  </p>
+</div>
 
 {% endblock %}
