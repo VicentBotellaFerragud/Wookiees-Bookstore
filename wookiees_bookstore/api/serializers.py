@@ -24,7 +24,12 @@ class BookSerializer(serializers.ModelSerializer):
         fields = super().get_fields()
 
         if self.logged_in_user:
-            fields['author'].queryset = CustomUser.objects.filter(
-                username=self.logged_in_user)
+            user = CustomUser.objects.get(username=self.logged_in_user)
+
+            if user.is_superuser:
+                fields['author'].queryset = CustomUser.objects.all()
+            else:
+                fields['author'].queryset = CustomUser.objects.filter(
+                    username=self.logged_in_user)
 
         return fields

@@ -26,7 +26,7 @@ class CustomLoginView(LoginView):
         user = authenticate_and_log_in_user(self.request, form)
         token, created = Token.objects.get_or_create(user=user)
 
-        return redirect('/api' + f'?token={token.key}')
+        return redirect('/api/overview' + f'?token={token.key}')
 
     def form_invalid(self, form):
         return render(self.request, self.template_name, {'invalid_credentials': form})
@@ -41,7 +41,7 @@ class CustomSignupView(FormView):
         user = authenticate_and_log_in_user(self.request, form, 'signup')
         token, created = Token.objects.get_or_create(user=user)
 
-        return redirect('/api' + f'?token={token.key}')
+        return redirect('/api/overview' + f'?token={token.key}')
 
     def form_invalid(self, form):
         return render(self.request, self.template_name, {'form': form})
