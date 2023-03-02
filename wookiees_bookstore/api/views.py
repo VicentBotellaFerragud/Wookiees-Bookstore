@@ -1,12 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Book
 from .serializers import BookSerializer
+from rest_framework import permissions, serializers
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import permissions
-from .serializers import BookSerializer
-from .models import Book
-from rest_framework import serializers
-from rest_framework.permissions import BasePermission
 
 
 def redirect_to_api_overview(request):
@@ -24,16 +20,17 @@ class IsAuthenticatedOrReadOnly(permissions.BasePermission):
 
         return request.user.is_authenticated
 
-
-class IsAuthorOrSuperuser(BasePermission):
     def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
         return obj.author == request.user or request.user.is_superuser
 
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrSuperuser]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
